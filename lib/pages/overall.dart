@@ -1,5 +1,6 @@
 // Overall Page
 import 'package:flutter/material.dart';
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:google_fonts/google_fonts.dart';
 import 'package:umva/pages/playlist.dart';
 import 'package:umva/pages/search.dart';
@@ -9,16 +10,25 @@ import 'library.dart';
 import 'nowplaying.dart';
 
 class OverallPage extends StatefulWidget {
-  OverallPage({Key? key, this.show}) : super(key: key);
-  final bool show;
+  OverallPage(
+      {Key? key,
+      this.show,
+      this.currentTitle,
+      this.currentChannel,
+      this.currentImage})
+      : super(key: key);
+  late final show;
+  final String? currentTitle;
+  final String? currentChannel;
+  final String? currentImage;
   @override
   State<StatefulWidget> createState() => OverallPageState();
 }
 
 class OverallPageState extends State<OverallPage> {
   int selectedIndex = 0;
-  PageController _pageController;
-  bool miniplayer;
+  late PageController _pageController;
+  late bool miniplayer;
 
   List<Widget> widgetOptions = [
     new LibraryPage(),
@@ -55,7 +65,7 @@ class OverallPageState extends State<OverallPage> {
         controller: _pageController,
       ),
       floatingActionButton: Visibility(
-        visible: miniplayer,
+        visible: miniplayer, // Miniplayer
         child: _getButton(),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -69,13 +79,13 @@ class OverallPageState extends State<OverallPage> {
                 Icons.view_week,
                 color: Color(0xFFF06543),
               ),
-              label: 'Library'), 
+              label: 'Library'),
           BottomNavigationBarItem(
               icon: Icon(
                 Icons.library_music_outlined,
                 color: Color(0xFFF06543),
               ),
-              label: 'Playlist'), 
+              label: 'Playlist'),
           BottomNavigationBarItem(
               icon: Icon(
                 Icons.search,
@@ -100,14 +110,22 @@ class OverallPageState extends State<OverallPage> {
       child: FittedBox(
         child: FloatingActionButton.extended(
           backgroundColor: Color(0xFF636F7E),
-          onPressed: () => _pushPage(context, NowPlayingPage()),
+          onPressed: () {
+            setState(() {
+              _pushPage(context, NowPlayingPage(
+                currentTitle: widget.currentTitle, 
+                currentChannel: widget.currentChannel, 
+                currentImage: widget.currentImage,
+              ));
+            });
+          },
           icon: Container(
             width: 40,
             height: 40,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(150),
               image: DecorationImage(
-                image: AssetImage('assets/holy.png'),
+                image: NetworkImage(widget.currentImage.toString()),
                 fit: BoxFit.cover,
               ),
             ),
@@ -117,14 +135,14 @@ class OverallPageState extends State<OverallPage> {
               Column(
                 children: [
                   Text(
-                    'Holy',
+                    widget.currentTitle.toString(),
                     style: GoogleFonts.inter(
                         color: Colors.white,
                         fontSize: 12,
                         fontWeight: FontWeight.w500),
                   ),
                   Text(
-                    'Justin Beiber',
+                    widget.currentChannel.toString(),
                     style: GoogleFonts.inter(
                         color: Colors.grey[300],
                         fontSize: 12,

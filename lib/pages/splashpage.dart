@@ -1,6 +1,7 @@
 // Splash Page
 import 'dart:async';
 import 'package:flutter/material.dart';
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:google_fonts/google_fonts.dart';
 //import 'package:umva/pages/nowplaying.dart';
 // Page imports
@@ -38,12 +39,7 @@ class SplashPageState extends State<SplashPage> {
               child: Container(
                 width: 70.8,
                 height: 70.8,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage('assets/logo.png'),
-                    fit: BoxFit.cover,
-                  ),
-                ),
+                child: Icon(Icons.music_note),
               ),
               ),
 

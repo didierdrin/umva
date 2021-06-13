@@ -1,24 +1,32 @@
 // Search Page
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:google_fonts/google_fonts.dart';
+import 'package:umva/pages/nowplaying.dart';
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:youtube_api/youtube_api.dart';
 // Page imports
 
 class SearchPage extends StatefulWidget {
   SearchPage({Key? key, this.searchContent}) : super(key: key);
-  final String searchContent;
+  final String? searchContent;
   @override
   State<StatefulWidget> createState() => SearchPageState();
 }
 
 class SearchPageState extends State<SearchPage> {
+  late String title;
+  late String channel;
+  late String image;
+
   TextStyle style = GoogleFonts.dosis(fontSize: 16.0);
   static String key = "AIzaSyCCGus7hZ2jLCdXfNC3KSl1J5D80BPJ5bc";
   YoutubeAPI ytApi = YoutubeAPI(key);
   List<YT_API> ytResult = [];
 
   callAPI() async {
-    String query = widget.searchContent;
+    final query = widget.searchContent;
     ytResult = await ytApi.search(query);
     ytResult = await ytApi.nextPage();
     setState(() {});
@@ -29,6 +37,30 @@ class SearchPageState extends State<SearchPage> {
     super.initState();
     callAPI();
     print('API RUNNING');
+  }
+
+  // Audio player
+  AudioPlayer audioPlayer = new AudioPlayer(mode: PlayerMode.MEDIA_PLAYER);
+  bool isPlaying = false;
+  late String currentSong;
+
+  void playMusic(String url) async {
+    if (isPlaying && currentSong != url) {
+      audioPlayer.pause();
+      int result = await audioPlayer.play(url);
+      if (result == 1) {
+        setState(() {
+          currentSong = url;
+        });
+      }
+    } else if (!isPlaying) {
+      int result = await audioPlayer.play(url);
+      if (result == 1) {
+        setState(() {
+          isPlaying = true;
+        });
+      }
+    }
   }
 
   @override
@@ -144,6 +176,21 @@ class SearchPageState extends State<SearchPage> {
 
   Widget listItem(index) {
     return ListTile(
+      onTap: () {
+        playMusic(ytResult[index].url);
+        setState(() {
+          title = ytResult[index].title;
+          channel = ytResult[index].channelTitle;
+          image = ytResult[index].thumbnail['default']['url'];
+        });
+        _pushPage(
+            context,
+            NowPlayingPage(
+              currentTitle: title,
+              currentChannel: channel,
+              currentImage: image,
+            ));
+      },
       leading: Container(
         width: 70,
         height: 70,

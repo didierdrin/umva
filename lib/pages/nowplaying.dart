@@ -1,12 +1,18 @@
 // Now Playing
 import 'package:flutter/material.dart';
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 // Page imports
 import 'overall.dart';
 
 class NowPlayingPage extends StatefulWidget {
-  NowPlayingPage({Key ? key}) : super(key: key);
+  NowPlayingPage(
+      {Key? key, this.currentTitle, this.currentChannel, this.currentImage})
+      : super(key: key);
+  final String? currentTitle;
+  final String? currentChannel;
+  final String? currentImage;
   @override
   State<StatefulWidget> createState() => NowPlayingPageState();
 }
@@ -30,7 +36,18 @@ class NowPlayingPageState extends State<NowPlayingPage> {
                     size: 30,
                   ),
                   onPressed: () {
-                    Navigator.push(context, PageTransition(child: OverallPage(show: true,), type: PageTransitionType.size, alignment: Alignment.topCenter, duration: Duration(milliseconds: 500)));
+                    Navigator.push(
+                        context,
+                        PageTransition(
+                            child: OverallPage(
+                              show: true,
+                              currentTitle: widget.currentTitle,
+                              currentChannel: widget.currentChannel,
+                              currentImage: widget.currentImage,
+                            ),
+                            type: PageTransitionType.size,
+                            alignment: Alignment.topCenter,
+                            duration: Duration(milliseconds: 500)));
                   },
                 ),
               ),
@@ -49,7 +66,15 @@ class NowPlayingPageState extends State<NowPlayingPage> {
                     size: 25,
                   ),
                   onPressed: () {
-                    Navigator.push(context, PageTransition(child: OverallPage(show: false,), type: PageTransitionType.size, alignment: Alignment.topCenter, duration: Duration(milliseconds: 500)));
+                    Navigator.push(
+                        context,
+                        PageTransition(
+                            child: OverallPage(
+                              show: false,
+                            ),
+                            type: PageTransitionType.size,
+                            alignment: Alignment.topCenter,
+                            duration: Duration(milliseconds: 500)));
                   },
                 ),
               ),
@@ -71,7 +96,7 @@ class NowPlayingPageState extends State<NowPlayingPage> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(150),
                     image: DecorationImage(
-                      image: AssetImage('assets/holy.png'),
+                      image: NetworkImage(widget.currentImage.toString()),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -92,7 +117,7 @@ class NowPlayingPageState extends State<NowPlayingPage> {
                   padding: EdgeInsets.only(right: 90.0),
                   child: Center(
                     child: Text(
-                      'Holy',
+                      widget.currentTitle.toString(),
                       style: GoogleFonts.inter(),
                     ),
                   ),
@@ -101,7 +126,7 @@ class NowPlayingPageState extends State<NowPlayingPage> {
                   padding: EdgeInsets.only(right: 90.0),
                   child: Center(
                     child: Text(
-                      'Justin Beiber',
+                      widget.currentChannel.toString(),
                       style: GoogleFonts.inter(),
                     ),
                   ),
@@ -112,7 +137,7 @@ class NowPlayingPageState extends State<NowPlayingPage> {
               padding: EdgeInsets.only(left: 30.0, right: 30.0, top: 10.0),
               child: Column(
                 children: [
-                  LinearProgressIndicator(),
+                  Slider.adaptive(value: 0.0, onChanged: (value) {}),
                 ],
               ),
             ),
