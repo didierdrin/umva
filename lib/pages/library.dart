@@ -5,7 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:umva/pages/nowplaying.dart';
 
 class LibraryPage extends StatefulWidget {
-  LibraryPage({Key key}) : super(key: key);
+  LibraryPage({Key? key}) : super(key: key);
   @override
   State<StatefulWidget> createState() => LibraryPageState();
 }

@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 // Page imports
 
 class SettingsPage extends StatefulWidget {
-  SettingsPage({Key key}) : super(key: key);
+  SettingsPage({Key? key}) : super(key: key);
   @override
   State<StatefulWidget> createState() => SettingsPageState();
 }

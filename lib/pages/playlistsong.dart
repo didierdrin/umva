@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 // Page imports
 
 class PlaylistSongPage extends StatefulWidget {
-  PlaylistSongPage({Key key}) : super(key: key);
+  PlaylistSongPage({Key? key}) : super(key: key);
   @override
   State<StatefulWidget> createState() => PlaylistSongPageState();
 }
@@ -180,8 +180,10 @@ class PlaylistSongPageState extends State<PlaylistSongPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  FlatButton(
-                    color: Colors.grey[250],
+                  TextButton(
+                    style: TextButton.styleFrom(
+                      backgroundColor: Colors.grey[250],
+                    ),
                     onPressed: () {},
                     child: Icon(
                       Icons.favorite,

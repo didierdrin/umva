@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 // Page imports
 
 class PlaylistPage extends StatefulWidget {
-  PlaylistPage({Key key}) : super(key: key);
+  PlaylistPage({Key? key}) : super(key: key);
   @override
   State<StatefulWidget> createState() => PlaylistPageState();
 }
@@ -56,13 +56,17 @@ class PlaylistPageState extends State<PlaylistPage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    TextButton(
+                    SizedBox(
                       height: 60,
-                      minWidth: 195,
-                      shape: RoundedRectangleBorder(
+                      width: 195,
+                      child: TextButton(
+                      style: TextButton.styleFrom(
+                        backgroundColor: Color(0xFFF06543),
+                        shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
+                      
                       ),
-                      color: Color(0xFFF06543),
+                      ),
                       onPressed: () {},
                       child: Row(
                         children: [
@@ -80,6 +84,7 @@ class PlaylistPageState extends State<PlaylistPage> {
                           ),
                         ],
                       ),
+                    ),
                     ),
                     SizedBox(
                       width: 60,
@@ -99,17 +104,21 @@ class PlaylistPageState extends State<PlaylistPage> {
                       ),
                     ),
 
-                    FlatButton(
-                      minWidth: 39,
+                    SizedBox(
                       height: 39,
-                      shape: RoundedRectangleBorder(
+                      width: 39,
+                      child: TextButton(
+                      style: TextButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(7),
                       ),
+                      ),
                       onPressed: () {},
-                      color: Colors.white,
                       child: Center(
                         child: Icon(Icons.format_align_center),
                       ),
+                    ),
                     ),
 
 

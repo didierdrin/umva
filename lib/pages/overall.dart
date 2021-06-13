@@ -9,7 +9,7 @@ import 'library.dart';
 import 'nowplaying.dart';
 
 class OverallPage extends StatefulWidget {
-  OverallPage({Key key, this.show}) : super(key: key);
+  OverallPage({Key? key, this.show}) : super(key: key);
   final bool show;
   @override
   State<StatefulWidget> createState() => OverallPageState();

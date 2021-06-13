@@ -1,6 +1,5 @@
 // Main Page
 import 'package:flutter/material.dart';
-import 'dart:async';
 // Page import
 import 'pages/splashpage.dart';
 

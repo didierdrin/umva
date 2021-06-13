@@ -7,7 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'overall.dart';
 
 class SplashPage extends StatefulWidget {
-  SplashPage({Key key}) : super(key: key);
+  SplashPage({Key? key}) : super(key: key);
   @override
   State<StatefulWidget> createState() => SplashPageState();
 }

@@ -6,7 +6,7 @@ import 'package:page_transition/page_transition.dart';
 import 'overall.dart';
 
 class NowPlayingPage extends StatefulWidget {
-  NowPlayingPage({Key key}) : super(key: key);
+  NowPlayingPage({Key ? key}) : super(key: key);
   @override
   State<StatefulWidget> createState() => NowPlayingPageState();
 }

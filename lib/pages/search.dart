@@ -5,15 +5,15 @@ import 'package:youtube_api/youtube_api.dart';
 // Page imports
 
 class SearchPage extends StatefulWidget {
+  SearchPage({Key? key, this.searchContent}) : super(key: key);
   final String searchContent;
-  SearchPage({Key key, this.searchContent}) : super(key: key);
   @override
   State<StatefulWidget> createState() => SearchPageState();
 }
 
 class SearchPageState extends State<SearchPage> {
   TextStyle style = GoogleFonts.dosis(fontSize: 16.0);
-  static String key = "AIzaSyD8odcZLSk8VvAhI4AyESvZmKWoL1CjKfM";
+  static String key = "AIzaSyCCGus7hZ2jLCdXfNC3KSl1J5D80BPJ5bc";
   YoutubeAPI ytApi = YoutubeAPI(key);
   List<YT_API> ytResult = [];
 
@@ -53,11 +53,13 @@ class SearchPageState extends State<SearchPage> {
         hintText: 'Search music',
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: Colors.grey[200]),
+          borderSide: BorderSide(color: Colors.grey),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: Colors.grey[200]),
+          borderSide: BorderSide(
+            color: Colors.grey,
+          ),
         ),
       ),
     );
