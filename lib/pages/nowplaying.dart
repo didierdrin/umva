@@ -1,23 +1,53 @@
 // Now Playing
 import 'package:flutter/material.dart';
-// ignore: import_of_legacy_library_into_null_safe
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:umva/pages/musicData.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 // Page imports
 import 'overall.dart';
 
 class NowPlayingPage extends StatefulWidget {
   NowPlayingPage(
-      {Key? key, this.currentTitle, this.currentChannel, this.currentImage})
+      {Key? key,
+      required this.recentSearches,
+      this.currentTitle,
+      this.currentChannel,
+      this.currentImage,
+      required this.songURL})
       : super(key: key);
+  final List<MusicData> recentSearches;
   final String? currentTitle;
   final String? currentChannel;
   final String? currentImage;
+  final String songURL;
   @override
   State<StatefulWidget> createState() => NowPlayingPageState();
 }
 
 class NowPlayingPageState extends State<NowPlayingPage> {
+  bool _isPlayerReady = false;
+  late YoutubePlayerController _controller;
+
+  @override
+  void initState() {
+    final String videoID =
+        YoutubePlayer.convertUrlToId(widget.songURL).toString();
+    super.initState();
+    _controller = YoutubePlayerController(
+        initialVideoId: videoID,
+        flags: const YoutubePlayerFlags(
+          autoPlay: true,
+          enableCaption: true,
+        ));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,6 +71,7 @@ class NowPlayingPageState extends State<NowPlayingPage> {
                         PageTransition(
                             child: OverallPage(
                               show: true,
+                              recentSearches: widget.recentSearches,
                               currentTitle: widget.currentTitle,
                               currentChannel: widget.currentChannel,
                               currentImage: widget.currentImage,
@@ -71,6 +102,7 @@ class NowPlayingPageState extends State<NowPlayingPage> {
                         PageTransition(
                             child: OverallPage(
                               show: false,
+                              recentSearches: widget.recentSearches,
                             ),
                             type: PageTransitionType.size,
                             alignment: Alignment.topCenter,
@@ -94,12 +126,9 @@ class NowPlayingPageState extends State<NowPlayingPage> {
                   width: 300.0,
                   height: 300.0,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(150),
-                    image: DecorationImage(
-                      image: NetworkImage(widget.currentImage.toString()),
-                      fit: BoxFit.cover,
-                    ),
+                    borderRadius: BorderRadius.circular(20),
                   ),
+                  child: videoPlayer(),
                 ),
               ),
             ),
@@ -214,6 +243,40 @@ class NowPlayingPageState extends State<NowPlayingPage> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget videoPlayer() {
+    return YoutubePlayerBuilder(
+      player: YoutubePlayer(
+        controller: _controller,
+        showVideoProgressIndicator: true,
+        progressIndicatorColor: Colors.orange,
+        topActions: [
+          const SizedBox(
+            width: 10,
+          ),
+          Expanded(
+              child: Text(
+            _controller.metadata.title,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+            style: TextStyle(color: Colors.white),
+          )),
+        ],
+        onReady: () {
+          _isPlayerReady;
+        },
+        onEnded: (data) {
+          SnackBar _snackBar = SnackBar(content: Text('Video ended !'));
+          ScaffoldMessenger.of(context).showSnackBar(_snackBar);
+        },
+      ),
+      builder: (context, player) => Scaffold(
+        body: Container(
+          child: player,
         ),
       ),
     );

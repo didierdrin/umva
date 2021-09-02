@@ -1,72 +1,26 @@
 // Search Page
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-// ignore: import_of_legacy_library_into_null_safe
 import 'package:google_fonts/google_fonts.dart';
-import 'package:umva/pages/nowplaying.dart';
-// ignore: import_of_legacy_library_into_null_safe
-import 'package:youtube_api/youtube_api.dart';
+import 'package:umva/pages/musicData.dart';
+import 'searchresults.dart';
 // Page imports
 
 class SearchPage extends StatefulWidget {
-  SearchPage({Key? key, this.searchContent}) : super(key: key);
-  final String? searchContent;
+  SearchPage({Key? key, required this.recentSearches}) : super(key: key);
+  final List<MusicData> recentSearches;
   @override
   State<StatefulWidget> createState() => SearchPageState();
 }
 
 class SearchPageState extends State<SearchPage> {
-  late String title;
-  late String channel;
-  late String image;
+  late String value;
 
+  //List<MusicData> recentSearches = [];
   TextStyle style = GoogleFonts.dosis(fontSize: 16.0);
-  static String key = "AIzaSyCCGus7hZ2jLCdXfNC3KSl1J5D80BPJ5bc";
-  YoutubeAPI ytApi = YoutubeAPI(key);
-  List<YT_API> ytResult = [];
 
-  callAPI() async {
-    final query = widget.searchContent;
-    ytResult = await ytApi.search(query);
-    ytResult = await ytApi.nextPage();
-    setState(() {});
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    callAPI();
-    print('API RUNNING');
-  }
-
-  // Audio player
-  AudioPlayer audioPlayer = new AudioPlayer(mode: PlayerMode.MEDIA_PLAYER);
-  bool isPlaying = false;
-  late String currentSong;
-
-  void playMusic(String url) async {
-    if (isPlaying && currentSong != url) {
-      audioPlayer.pause();
-      int result = await audioPlayer.play(url);
-      if (result == 1) {
-        setState(() {
-          currentSong = url;
-        });
-      }
-    } else if (!isPlaying) {
-      int result = await audioPlayer.play(url);
-      if (result == 1) {
-        setState(() {
-          isPlaying = true;
-        });
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final _searchController = TextEditingController();
-    final searchField = TextFormField(
+  TextEditingController _searchController = TextEditingController();
+  TextFormField _searchFormField() {
+    return TextFormField(
       obscureText: false,
       style: style,
       controller: _searchController,
@@ -74,10 +28,18 @@ class SearchPageState extends State<SearchPage> {
         suffixIcon: IconButton(
           icon: Icon(
             Icons.search,
+            color: Color(0xFFF06543),
             size: 30,
           ),
-          onPressed: () => _pushPage(
-              context, SearchPage(searchContent: _searchController.text)),
+          onPressed: () {
+            if (_searchController.text.isNotEmpty) {
+              _pushPage(
+                  context, SearchResultPage(query: _searchController.text));
+              _searchController.clear();
+            } else {
+              return null;
+            }
+          },
         ),
         filled: true,
         fillColor: Colors.grey[200],
@@ -95,23 +57,28 @@ class SearchPageState extends State<SearchPage> {
         ),
       ),
     );
+  }
 
+  @override
+  void dispose() {
+    super.dispose();
+    _searchController.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(50.0),
         child: Padding(
           padding: EdgeInsets.only(top: 25.0),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Padding(
                 padding: EdgeInsets.only(left: 10.0),
-                child: IconButton(
-                  icon: Icon(
-                    Icons.chevron_left,
-                    size: 30,
-                  ),
-                  onPressed: () {},
+                child: SizedBox(
+                  width: 50,
                 ),
               ),
               Center(
@@ -134,7 +101,7 @@ class SearchPageState extends State<SearchPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              searchField,
+              _searchFormField(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
@@ -150,21 +117,13 @@ class SearchPageState extends State<SearchPage> {
               ),
               Padding(
                 padding: EdgeInsets.only(top: 10.0),
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.vertical,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Container(
-                        height: 500.0,
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: ytResult.length,
-                          itemBuilder: (_, int index) => listItem(index),
-                        ),
-                      ),
-                    ],
-                  ),
+                child: Center(
+                  child: (widget.recentSearches.isEmpty)
+                      ? Padding(
+                          padding: const EdgeInsets.only(top: 200.0),
+                          child: Text('No Recent Searches'),
+                        )
+                      : recentSearchList(),
                 ),
               ),
             ],
@@ -174,48 +133,22 @@ class SearchPageState extends State<SearchPage> {
     );
   }
 
-  Widget listItem(index) {
-    return ListTile(
-      onTap: () {
-        playMusic(ytResult[index].url);
-        setState(() {
-          title = ytResult[index].title;
-          channel = ytResult[index].channelTitle;
-          image = ytResult[index].thumbnail['default']['url'];
-        });
-        _pushPage(
-            context,
-            NowPlayingPage(
-              currentTitle: title,
-              currentChannel: channel,
-              currentImage: image,
-            ));
-      },
-      leading: Container(
-        width: 70,
-        height: 70,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10.0),
-          image: DecorationImage(
-            image: NetworkImage(ytResult[index].thumbnail['default']['url']),
-            fit: BoxFit.cover,
+  Widget recentSearchList() {
+    // print(recentSearches[0].channelTitle);
+    return Container(
+      height: 700,
+      child: ListView.builder(
+      itemCount: widget.recentSearches.length,
+      itemBuilder: (context, index) {
+        return ListTile(
+          leading: Container(
+            child: Image.network(widget.recentSearches[index].image),
           ),
-        ),
-      ),
-      title: Text(
-        ytResult[index].title,
-        style: GoogleFonts.dosis(fontSize: 16),
-      ),
-      subtitle: Text(
-        ytResult[index].channelTitle,
-        style: GoogleFonts.dosis(fontSize: 16),
-      ),
-      trailing: IconButton(
-        icon: Icon(
-          Icons.cancel_outlined,
-        ),
-        onPressed: () {},
-      ),
+          title: Text(widget.recentSearches[index].title),
+          subtitle: Text(widget.recentSearches[index].channelTitle),
+        );
+      },
+    ),
     );
   }
 

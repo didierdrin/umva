@@ -1,7 +1,7 @@
 // Overall Page
 import 'package:flutter/material.dart';
-// ignore: import_of_legacy_library_into_null_safe
 import 'package:google_fonts/google_fonts.dart';
+import 'package:umva/pages/musicData.dart';
 import 'package:umva/pages/playlist.dart';
 import 'package:umva/pages/search.dart';
 import 'package:umva/pages/settings.dart';
@@ -12,11 +12,13 @@ import 'nowplaying.dart';
 class OverallPage extends StatefulWidget {
   OverallPage(
       {Key? key,
+      required this.recentSearches,
       this.show,
       this.currentTitle,
       this.currentChannel,
       this.currentImage})
       : super(key: key);
+  final List<MusicData> recentSearches;
   late final show;
   final String? currentTitle;
   final String? currentChannel;
@@ -30,12 +32,7 @@ class OverallPageState extends State<OverallPage> {
   late PageController _pageController;
   late bool miniplayer;
 
-  List<Widget> widgetOptions = [
-    new LibraryPage(),
-    new PlaylistPage(),
-    new SearchPage(),
-    new SettingsPage(),
-  ];
+  
 
   @override
   void initState() {
@@ -57,6 +54,14 @@ class OverallPageState extends State<OverallPage> {
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> widgetOptions = [
+    new LibraryPage(recentSearches: widget.recentSearches,),
+    // new PlaylistPage(), Umva 1.0.1
+    new SearchPage(
+      recentSearches: widget.recentSearches,
+    ),
+    new SettingsPage(),
+  ];
     print('MINIPLAYER: $miniplayer');
     return Scaffold(
       body: PageView(
@@ -80,12 +85,13 @@ class OverallPageState extends State<OverallPage> {
                 color: Color(0xFFF06543),
               ),
               label: 'Library'),
+          /* Umva 1.0.1
           BottomNavigationBarItem(
               icon: Icon(
                 Icons.library_music_outlined,
                 color: Color(0xFFF06543),
               ),
-              label: 'Playlist'),
+              label: 'Playlist'), */
           BottomNavigationBarItem(
               icon: Icon(
                 Icons.search,
@@ -112,11 +118,15 @@ class OverallPageState extends State<OverallPage> {
           backgroundColor: Color(0xFF636F7E),
           onPressed: () {
             setState(() {
-              _pushPage(context, NowPlayingPage(
-                currentTitle: widget.currentTitle, 
-                currentChannel: widget.currentChannel, 
-                currentImage: widget.currentImage,
-              ));
+              _pushPage(
+                  context,
+                  NowPlayingPage(
+                    songURL: '',
+                    recentSearches: widget.recentSearches,
+                    currentTitle: widget.currentTitle,
+                    currentChannel: widget.currentChannel,
+                    currentImage: widget.currentImage,
+                  ));
             });
           },
           icon: Container(

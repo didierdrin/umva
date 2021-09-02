@@ -1,14 +1,14 @@
 // Splash Page
 import 'dart:async';
 import 'package:flutter/material.dart';
-// ignore: import_of_legacy_library_into_null_safe
 import 'package:google_fonts/google_fonts.dart';
-//import 'package:umva/pages/nowplaying.dart';
+import 'package:umva/pages/musicData.dart';
 // Page imports
 import 'overall.dart';
 
 class SplashPage extends StatefulWidget {
-  SplashPage({Key? key}) : super(key: key);
+  SplashPage({Key? key, required this.recentSearches}) : super(key: key);
+  final List<MusicData> recentSearches;
   @override
   State<StatefulWidget> createState() => SplashPageState();
 }
@@ -21,7 +21,10 @@ class SplashPageState extends State<SplashPage> {
       Duration(seconds: 3),
       () => Navigator.of(context).pushReplacement(
         MaterialPageRoute<void>(
-            builder: (BuildContext context) => OverallPage(show: false,)),
+            builder: (BuildContext context) => OverallPage(
+                  show: false,
+                  recentSearches: widget.recentSearches,
+                )),
       ),
     );
   }
@@ -35,23 +38,30 @@ class SplashPageState extends State<SplashPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Padding(
-              padding: EdgeInsets.only(), 
-              child: Container(
-                width: 70.8,
-                height: 70.8,
-                child: Icon(Icons.music_note),
+              padding: EdgeInsets.only(top: 5),
+              child: SizedBox(
+                child: Icon(
+                  Icons.music_note,
+                  color: Colors.white,
+                  size: 40,
+                ),
               ),
-              ),
-
+            ),
             Padding(
-              padding: EdgeInsets.only(top: 10.0), 
+              padding: EdgeInsets.only(top: 10.0),
               child: Center(
-                child: Text('UMVA', style: GoogleFonts.dosis(fontSize: 25.0, fontWeight: FontWeight.bold, color: Colors.white),),
+                child: Text(
+                  'UMVA',
+                  style: GoogleFonts.dosis(
+                      fontSize: 30.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
+                ),
               ),
-              ),
+            ),
           ],
         ),
-        ),
+      ),
     );
   }
 }

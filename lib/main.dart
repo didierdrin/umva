@@ -1,14 +1,17 @@
-// @dart=2.9
-// Main Page
+// Main Page : Umva 1.0.0
 import 'package:flutter/material.dart';
+import 'package:umva/pages/musicData.dart';
 // Page import
 import 'pages/splashpage.dart';
 
 void main() {
-  runApp(MyApp());
+  //late List<MusicData> recentSearches;
+  runApp(MyApp(recentSearches: [],));
 }
 
 class MyApp extends StatelessWidget {
+  final List<MusicData> recentSearches;
+  MyApp({Key? key, required this.recentSearches}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -17,7 +20,9 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.orange,
       ),
-      home: SplashPage(),
+      home: SplashPage(
+        recentSearches: [],
+      ),
     );
   }
 }

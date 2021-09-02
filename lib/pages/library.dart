@@ -1,12 +1,13 @@
 // Library Page
 import 'package:flutter/material.dart';
-// ignore: import_of_legacy_library_into_null_safe
 import 'package:google_fonts/google_fonts.dart';
+import 'package:umva/pages/musicData.dart';
 // Page imports
 import 'package:umva/pages/nowplaying.dart';
 
 class LibraryPage extends StatefulWidget {
-  LibraryPage({Key? key}) : super(key: key);
+  LibraryPage({Key? key, required this.recentSearches}) : super(key: key);
+  final List<MusicData> recentSearches;
   @override
   State<StatefulWidget> createState() => LibraryPageState();
 }
@@ -33,6 +34,7 @@ class LibraryPageState extends State<LibraryPage> {
           padding: EdgeInsets.only(top: 0.0, left: 10.0),
           child: Column(
             children: [
+              /* This Update will come in version 1.0.1
               Padding(
                 padding: EdgeInsets.only(top: 24.0),
                 child: Row(
@@ -60,7 +62,7 @@ class LibraryPageState extends State<LibraryPage> {
                     ),
                   ],
                 ),
-              ),
+              ), 
               Padding(
                 padding: EdgeInsets.only(top: 21.0),
                 child: SingleChildScrollView(
@@ -223,7 +225,7 @@ class LibraryPageState extends State<LibraryPage> {
                     ],
                   ),
                 ),
-              ),
+              ), */
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -334,7 +336,12 @@ class LibraryPageState extends State<LibraryPage> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       ListTile(
-                        onTap: () => _pushPage(context, NowPlayingPage()),
+                        onTap: () => _pushPage(
+                            context,
+                            NowPlayingPage(
+                              songURL: '',
+                              recentSearches: widget.recentSearches,
+                            )),
                         leading: Container(
                           width: 70,
                           height: 70,
