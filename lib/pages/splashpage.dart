@@ -2,13 +2,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:umva/pages/musicData.dart';
 // Page imports
 import 'overall.dart';
 
 class SplashPage extends StatefulWidget {
-  SplashPage({Key? key, required this.recentSearches}) : super(key: key);
-  final List<MusicData> recentSearches;
+  SplashPage({Key? key,}) : super(key: key);
   @override
   State<StatefulWidget> createState() => SplashPageState();
 }
@@ -21,10 +19,7 @@ class SplashPageState extends State<SplashPage> {
       Duration(seconds: 3),
       () => Navigator.of(context).pushReplacement(
         MaterialPageRoute<void>(
-            builder: (BuildContext context) => OverallPage(
-                  show: false,
-                  recentSearches: widget.recentSearches,
-                )),
+            builder: (BuildContext context) => OverallPage(show: false,)),
       ),
     );
   }
@@ -41,9 +36,9 @@ class SplashPageState extends State<SplashPage> {
               padding: EdgeInsets.only(top: 5),
               child: SizedBox(
                 child: Icon(
-                  Icons.music_note,
+                  Icons.headphones_outlined,
                   color: Colors.white,
-                  size: 40,
+                  size: 50,
                 ),
               ),
             ),

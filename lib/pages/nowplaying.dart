@@ -2,37 +2,31 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:umva/pages/library.dart';
 import 'package:umva/pages/musicData.dart';
+import 'package:umva/pages/search.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 // Page imports
 import 'overall.dart';
 
 class NowPlayingPage extends StatefulWidget {
-  NowPlayingPage(
-      {Key? key,
-      required this.recentSearches,
-      this.currentTitle,
-      this.currentChannel,
-      this.currentImage,
-      required this.songURL})
+  NowPlayingPage({Key? key, this.recentSearches, this.songURL})
       : super(key: key);
-  final List<MusicData> recentSearches;
-  final String? currentTitle;
-  final String? currentChannel;
-  final String? currentImage;
-  final String songURL;
+  final List<MusicData>? recentSearches;
+  late final String? songURL;
   @override
   State<StatefulWidget> createState() => NowPlayingPageState();
 }
 
 class NowPlayingPageState extends State<NowPlayingPage> {
-  bool _isPlayerReady = false;
+  Color _iconColor = Colors.grey;
+  late bool _isPlayingReady;
   late YoutubePlayerController _controller;
 
   @override
   void initState() {
     final String videoID =
-        YoutubePlayer.convertUrlToId(widget.songURL).toString();
+        YoutubePlayer.convertUrlToId(widget.songURL ?? '').toString();
     super.initState();
     _controller = YoutubePlayerController(
         initialVideoId: videoID,
@@ -50,6 +44,7 @@ class NowPlayingPageState extends State<NowPlayingPage> {
 
   @override
   Widget build(BuildContext context) {
+    List<MusicData>? songDetails = widget.recentSearches;
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(50.0),
@@ -70,11 +65,9 @@ class NowPlayingPageState extends State<NowPlayingPage> {
                         context,
                         PageTransition(
                             child: OverallPage(
+                              isPlaying: _isPlayingReady,
                               show: true,
                               recentSearches: widget.recentSearches,
-                              currentTitle: widget.currentTitle,
-                              currentChannel: widget.currentChannel,
-                              currentImage: widget.currentImage,
                             ),
                             type: PageTransitionType.size,
                             alignment: Alignment.topCenter,
@@ -97,7 +90,9 @@ class NowPlayingPageState extends State<NowPlayingPage> {
                     size: 25,
                   ),
                   onPressed: () {
-                    Navigator.push(
+                    dispose();
+
+                    Navigator.pushReplacement(
                         context,
                         PageTransition(
                             child: OverallPage(
@@ -123,7 +118,7 @@ class NowPlayingPageState extends State<NowPlayingPage> {
               child: Padding(
                 padding: EdgeInsets.only(top: 10.0),
                 child: Container(
-                  width: 300.0,
+                  width: double.infinity,
                   height: 300.0,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
@@ -138,15 +133,24 @@ class NowPlayingPageState extends State<NowPlayingPage> {
                 leading: IconButton(
                   icon: Icon(
                     Icons.favorite,
-                    color: Color(0xFFF06543),
+                    color: _iconColor,
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    setState(() {
+                      if (_iconColor == Colors.grey) {
+                        _iconColor = Color(0xFFF06543);
+                      } else {
+                        _iconColor = Colors.grey;
+                      }
+                    });
+                  },
                 ),
                 title: Padding(
                   padding: EdgeInsets.only(right: 90.0),
                   child: Center(
                     child: Text(
-                      widget.currentTitle.toString(),
+                      songDetails![songDetails.length - 1].title,
+                      overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.inter(),
                     ),
                   ),
@@ -155,13 +159,15 @@ class NowPlayingPageState extends State<NowPlayingPage> {
                   padding: EdgeInsets.only(right: 90.0),
                   child: Center(
                     child: Text(
-                      widget.currentChannel.toString(),
+                      songDetails[songDetails.length - 1].channelTitle,
                       style: GoogleFonts.inter(),
                     ),
                   ),
                 ),
               ),
             ),
+
+            /*
             Padding(
               padding: EdgeInsets.only(left: 30.0, right: 30.0, top: 10.0),
               child: Column(
@@ -241,6 +247,36 @@ class NowPlayingPageState extends State<NowPlayingPage> {
                   ),
                 ],
               ),
+            ), */
+
+            Padding(
+              padding: EdgeInsets.all(10.0),
+              child: SizedBox(
+                child: Column(
+                  children: [
+                    Divider(
+                      thickness: 1,
+                      indent: 20,
+                      endIndent: 20,
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Container(
+                        child: Center(
+                      child: Text(
+                        "Suggested & Ads",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 18),
+                      ),
+                    )),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    // Container(child: ListView(),), List Tiles of same URL search
+                  ],
+                ),
+              ),
             ),
           ],
         ),
@@ -267,9 +303,10 @@ class NowPlayingPageState extends State<NowPlayingPage> {
           )),
         ],
         onReady: () {
-          _isPlayerReady;
+          _isPlayingReady = true;
         },
         onEnded: (data) {
+          _isPlayingReady = false;
           SnackBar _snackBar = SnackBar(content: Text('Video ended !'));
           ScaffoldMessenger.of(context).showSnackBar(_snackBar);
         },

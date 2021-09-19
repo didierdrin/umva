@@ -7,4 +7,8 @@ class MusicData {
   final String image;
 
   const MusicData(this.title, this.channelTitle, this.url, this.image);
+
+  // void delete() {
+  //   MusicData(this.title, this.channelTitle, this.url, this.image);
+  // }
 }

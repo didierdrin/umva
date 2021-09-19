@@ -108,17 +108,14 @@ class SearchResultPageState extends State<SearchResultPage> {
                 songURL: url,
                 recentSearches: recentSearches,
               ));
-          recentSearches.add(MusicData(video.title, video.channelTitle,
+          recentSearches.insert(recentSearches.length, MusicData(video.title, video.channelTitle,
               video.url, video.thumbnail.small.url ?? ''));
           SearchPage(recentSearches: recentSearches);
-          OverallPage(recentSearches: recentSearches);
+          OverallPage(show: false, recentSearches: recentSearches,);
           LibraryPage(
             recentSearches: recentSearches,
           );
-          SplashPage(
-            recentSearches: recentSearches,
-          );
-          MyApp(recentSearches: recentSearches);
+      
         },
         leading: Container(
           child: Image.network(
@@ -138,3 +135,4 @@ class SearchResultPageState extends State<SearchResultPage> {
     );
   }
 }
+

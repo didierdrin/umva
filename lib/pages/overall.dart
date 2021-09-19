@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:umva/pages/musicData.dart';
-import 'package:umva/pages/playlist.dart';
 import 'package:umva/pages/search.dart';
 import 'package:umva/pages/settings.dart';
 // Page imports
@@ -10,19 +9,15 @@ import 'library.dart';
 import 'nowplaying.dart';
 
 class OverallPage extends StatefulWidget {
-  OverallPage(
-      {Key? key,
-      required this.recentSearches,
-      this.show,
-      this.currentTitle,
-      this.currentChannel,
-      this.currentImage})
-      : super(key: key);
-  final List<MusicData> recentSearches;
-  late final show;
-  final String? currentTitle;
-  final String? currentChannel;
-  final String? currentImage;
+  OverallPage({
+    Key? key,
+    this.recentSearches,
+    this.isPlaying,
+    required this.show,
+  }) : super(key: key);
+  late final List<MusicData>? recentSearches;
+  final bool show;
+  final bool? isPlaying;
   @override
   State<StatefulWidget> createState() => OverallPageState();
 }
@@ -30,15 +25,11 @@ class OverallPage extends StatefulWidget {
 class OverallPageState extends State<OverallPage> {
   int selectedIndex = 0;
   late PageController _pageController;
-  late bool miniplayer;
-
-  
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: selectedIndex);
-    miniplayer = widget.show;
   }
 
   void onPageChanged(int page) {
@@ -54,14 +45,23 @@ class OverallPageState extends State<OverallPage> {
 
   @override
   Widget build(BuildContext context) {
+    List<MusicData>? songDetails = widget.recentSearches;
+    bool? isPlaying = widget.isPlaying;
+
+    bool miniplayer = widget.show;
+
     List<Widget> widgetOptions = [
-    new LibraryPage(recentSearches: widget.recentSearches,),
-    // new PlaylistPage(), Umva 1.0.1
-    new SearchPage(
-      recentSearches: widget.recentSearches,
-    ),
-    new SettingsPage(),
-  ];
+      new LibraryPage(
+        recentSearches: songDetails,
+        isPlaying: isPlaying,
+      ),
+      // TODO: new PlaylistPage(), Umva 1.0.1
+      new SearchPage(
+        recentSearches: songDetails,
+        isPlaying: isPlaying,
+      ),
+      new SettingsPage(),
+    ];
     print('MINIPLAYER: $miniplayer');
     return Scaffold(
       body: PageView(
@@ -71,7 +71,15 @@ class OverallPageState extends State<OverallPage> {
       ),
       floatingActionButton: Visibility(
         visible: miniplayer, // Miniplayer
-        child: _getButton(),
+        child: (songDetails == null)
+            ? Center(
+                child: Text(''),
+              )
+            : _getButton(MusicData(
+                songDetails[songDetails.length - 1].title,
+                songDetails[songDetails.length - 1].channelTitle,
+                songDetails[songDetails.length - 1].url,
+                songDetails[songDetails.length - 1].image)),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       bottomNavigationBar: BottomNavigationBar(
@@ -85,6 +93,7 @@ class OverallPageState extends State<OverallPage> {
                 color: Color(0xFFF06543),
               ),
               label: 'Library'),
+          // TODO: This update for Playlist
           /* Umva 1.0.1
           BottomNavigationBarItem(
               icon: Icon(
@@ -109,7 +118,8 @@ class OverallPageState extends State<OverallPage> {
     );
   }
 
-  Widget _getButton() {
+  Widget _getButton(MusicData songDetails) {
+    bool? _isPlaying = widget.isPlaying;
     return Container(
       width: 379,
       height: 79,
@@ -117,17 +127,16 @@ class OverallPageState extends State<OverallPage> {
         child: FloatingActionButton.extended(
           backgroundColor: Color(0xFF636F7E),
           onPressed: () {
-            setState(() {
+            if (_isPlaying == true) {
+              Navigator.of(context).pop();
+            } else {
               _pushPage(
                   context,
                   NowPlayingPage(
-                    songURL: '',
+                    songURL: songDetails.url,
                     recentSearches: widget.recentSearches,
-                    currentTitle: widget.currentTitle,
-                    currentChannel: widget.currentChannel,
-                    currentImage: widget.currentImage,
                   ));
-            });
+            }
           },
           icon: Container(
             width: 40,
@@ -135,38 +144,46 @@ class OverallPageState extends State<OverallPage> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(150),
               image: DecorationImage(
-                image: NetworkImage(widget.currentImage.toString()),
+                image: NetworkImage(songDetails.image),
                 fit: BoxFit.cover,
               ),
             ),
           ),
           label: Row(
             children: [
-              Column(
-                children: [
-                  Text(
-                    widget.currentTitle.toString(),
-                    style: GoogleFonts.inter(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500),
-                  ),
-                  Text(
-                    widget.currentChannel.toString(),
-                    style: GoogleFonts.inter(
-                        color: Colors.grey[300],
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500),
-                  ),
-                ],
+              SizedBox(
+                width: 200,
+                child: Column(
+                  children: [
+                    Text(
+                      songDetails.title,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.inter(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500),
+                    ),
+                    Text(
+                      songDetails.channelTitle,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.inter(
+                          color: Colors.grey[300],
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500),
+                    ),
+                  ],
+                ),
               ),
+
+              SizedBox(width: 50,),
+              /* TODO: Add this feature later
               IconButton(
                 icon: Icon(
                   Icons.pause_circle_outline,
                   color: Colors.white,
                 ),
                 onPressed: () {},
-              ),
+              ), */
             ],
           ),
         ),
@@ -180,3 +197,7 @@ class OverallPageState extends State<OverallPage> {
     );
   }
 }
+
+// TODO: Error Null value being checked to be empty, 
+// on the other page I solved it by changing the operator to == null  
+// but Here it's not working

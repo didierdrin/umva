@@ -2,19 +2,24 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:umva/pages/musicData.dart';
+import 'dart:core';
 // Page imports
 import 'package:umva/pages/nowplaying.dart';
 
 class LibraryPage extends StatefulWidget {
-  LibraryPage({Key? key, required this.recentSearches}) : super(key: key);
-  final List<MusicData> recentSearches;
+  LibraryPage({Key? key, this.recentSearches, this.isPlaying})
+      : super(key: key);
+  final List<MusicData>? recentSearches;
+  late bool? isPlaying;
   @override
   State<StatefulWidget> createState() => LibraryPageState();
 }
 
 class LibraryPageState extends State<LibraryPage> {
+  
   @override
   Widget build(BuildContext context) {
+    List<MusicData>? recentlyPlayed = List.from(widget.recentSearches);
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(50.0),
@@ -34,6 +39,7 @@ class LibraryPageState extends State<LibraryPage> {
           padding: EdgeInsets.only(top: 0.0, left: 10.0),
           child: Column(
             children: [
+              // TODO: Next Updates Playlist
               /* This Update will come in version 1.0.1
               Padding(
                 padding: EdgeInsets.only(top: 24.0),
@@ -263,7 +269,7 @@ class LibraryPageState extends State<LibraryPage> {
                   Padding(
                     padding: EdgeInsets.only(top: 20.0, left: 10.0),
                     child: Text(
-                      'Recently added',
+                      'Favorites',
                       style: GoogleFonts.inter(
                           fontSize: 20.0, fontWeight: FontWeight.w500),
                     ),
@@ -331,50 +337,78 @@ class LibraryPageState extends State<LibraryPage> {
               ),
               Padding(
                 padding: EdgeInsets.only(top: 10.0),
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      ListTile(
-                        onTap: () => _pushPage(
-                            context,
-                            NowPlayingPage(
-                              songURL: '',
-                              recentSearches: widget.recentSearches,
-                            )),
-                        leading: Container(
-                          width: 70,
-                          height: 70,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10.0),
-                            image: DecorationImage(
-                              image: AssetImage('assets/holy.png'),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                        title: Text(
-                          'Holy',
-                          style: GoogleFonts.inter(fontSize: 16),
-                        ),
-                        subtitle: Text(
-                          'Justin Beiber',
-                          style: GoogleFonts.inter(fontSize: 16),
-                        ),
-                        trailing: IconButton(
-                          icon: Icon(
-                            Icons.favorite,
-                            color: Color(0xFFF06543),
-                          ),
-                          onPressed: () {},
-                        ),
-                      ),
-                    ],
-                  ),
+                child: Container(
+                  height: 400,
+                  child: recentPlayed(),
                 ),
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget recentPlayed() {
+    List<MusicData>? songDetails = widget.recentSearches;
+    return songDetails == null
+        ? Center(
+            child: Text('No Recent played Song'),
+          )
+        : ListView(children: songDetails.map<Widget>(rPlistItem).toList());
+  }
+
+  Widget rPlistItem(MusicData songDetails) {
+    bool? _isPlaying = widget.isPlaying;
+    Color _iconColor = Colors.grey;
+
+    List<MusicData>? recentSearches = widget
+        .recentSearches; // List.from(widget.recentSearches) making a copy of this list now to be mixed with recent searches
+    return Container(
+      child: ListTile(
+        onTap: () {
+          print(
+              'This is the state of the VIDEO: $_isPlaying , ${widget.isPlaying}');
+          if (_isPlaying == true) {
+            Navigator.of(context).pop();
+          } else {
+            _pushPage(
+                context,
+                NowPlayingPage(
+                  songURL: songDetails.url,
+                  recentSearches: widget.recentSearches,
+                ));
+          }
+        },
+        leading: Container(
+          width: 70,
+          height: 70,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10.0),
+            image: DecorationImage(
+              image: NetworkImage(songDetails.image),
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
+        title: Text(
+          songDetails.title,
+          overflow: TextOverflow.ellipsis,
+          style: GoogleFonts.inter(fontSize: 16),
+        ),
+        subtitle: Text(
+          songDetails.channelTitle,
+          style: GoogleFonts.inter(fontSize: 16),
+        ),
+        trailing: IconButton(
+          icon: Icon(
+            Icons.delete,
+            color: _iconColor,
+          ),
+          onPressed: () {
+            // songDetails.remove position to be removed
+            // recentSearches!.remove(songDetails);
+          },
         ),
       ),
     );
