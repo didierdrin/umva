@@ -1,5 +1,6 @@
 // Search Page
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:umva/pages/musicData.dart';
 import 'package:umva/pages/nowplaying.dart';
@@ -119,7 +120,7 @@ class SearchPageState extends State<SearchPage> {
               ),
               Padding(
                 padding: EdgeInsets.only(top: 10.0),
-                child: Container(height: 700, child: recentSearchContainer()),
+                child: recentSearchContainer(),
               ),
             ],
           ),
@@ -132,12 +133,28 @@ class SearchPageState extends State<SearchPage> {
     List<MusicData>? songDetails = widget.recentSearches;
     return songDetails == null
         ? Padding(
-            padding: const EdgeInsets.only(top: 200.0),
-            child: Text('No Recent Searches'),
+            padding: const EdgeInsets.only(top: 90.0),
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: Column(
+                children: [
+                  Container(
+                    width: 130,
+                    height: 130,
+                    child: SvgPicture.asset('assets/search.svg'),
+                  ),
+                  SizedBox(height: 10.0,),
+                  Text('Search'),
+                ],
+              ),
+            ),
           )
-        : ListView(
-            children: songDetails.map<Widget>(recentSearchList).toList(),
-          );
+        : Container(
+          height: 700,
+          child: ListView(
+              children: songDetails.map<Widget>(recentSearchList).toList(),
+            ),
+        );
   }
 
   Widget recentSearchList(MusicData songDetails) {

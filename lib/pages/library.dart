@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:umva/pages/musicData.dart';
 import 'dart:core';
+import 'package:flutter_svg/flutter_svg.dart';
 // Page imports
 import 'package:umva/pages/nowplaying.dart';
 
@@ -19,7 +20,7 @@ class LibraryPageState extends State<LibraryPage> {
   
   @override
   Widget build(BuildContext context) {
-    List<MusicData>? recentlyPlayed = List.from(widget.recentSearches);
+    //List<MusicData>? recentlyPlayed = List.from(widget.recentSearches);
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(50.0),
@@ -284,38 +285,19 @@ class LibraryPageState extends State<LibraryPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
-                        padding: EdgeInsets.only(right: 10.0),
-                        child: Column(
-                          children: [
-                            Container(
-                              width: 130,
-                              height: 130,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                                image: DecorationImage(
-                                  image: AssetImage('assets/holy.png'),
-                                  fit: BoxFit.cover,
+                        padding: EdgeInsets.all(25.0),
+                        child: Align(
+                          alignment: Alignment.topCenter,
+                          child: Column(
+                            children: [
+                              Container(
+                                  width: 130,
+                                  height: 130,
+                                  child: SvgPicture.asset('assets/appreciation.svg'),
                                 ),
-                              ),
-                            ),
-                            SizedBox(
-                              height: 5.0,
-                            ),
-                            SizedBox(
-                              child: Text(
-                                'Holy',
-                                style: GoogleFonts.inter(
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 16.0),
-                              ),
-                            ),
-                            SizedBox(
-                              child: Text(
-                                'Justin Beiber',
-                                style: GoogleFonts.inter(fontSize: 16.0),
-                              ),
-                            ),
-                          ],
+                              Text('Add songs'),
+                            ],
+                          ),
                         ),
                       ),
                     ],
@@ -337,8 +319,7 @@ class LibraryPageState extends State<LibraryPage> {
               ),
               Padding(
                 padding: EdgeInsets.only(top: 10.0),
-                child: Container(
-                  height: 400,
+                child: SizedBox(
                   child: recentPlayed(),
                 ),
               ),
@@ -352,10 +333,23 @@ class LibraryPageState extends State<LibraryPage> {
   Widget recentPlayed() {
     List<MusicData>? songDetails = widget.recentSearches;
     return songDetails == null
-        ? Center(
-            child: Text('No Recent played Song'),
-          )
-        : ListView(children: songDetails.map<Widget>(rPlistItem).toList());
+        ? Padding(
+          padding: const EdgeInsets.all(25.0),
+          child: Align(
+            alignment: Alignment.topCenter,
+              child: Column(
+                children: [
+                  Container(
+                    width: 130,
+                    height: 130,
+                    child: SvgPicture.asset('assets/playlist.svg'),
+                  ),
+                  Text('Add songs'),
+                ],
+              ),
+            ),
+        )
+        : Container(height: 400, child: ListView(children: songDetails.map<Widget>(rPlistItem).toList()));
   }
 
   Widget rPlistItem(MusicData songDetails) {
